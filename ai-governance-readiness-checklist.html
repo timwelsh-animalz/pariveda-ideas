@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI governance readiness checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/%40tabler/icons-webfont/2.47.0/tabler-icons.min.css">
+<style>
+  :root {
+    --surface-0: #F7F8FC;
+    --surface-1: #E4E7F2;
+    --surface-2: #FFFFFF;
+    --border: #E2E4ED;
+    --border-accent: #2C75FF;
+    --text-primary: #010F31;
+    --text-secondary: #5B6178;
+    --text-muted: #8B91A6;
+    --bg-accent: #EBE9F5;
+    --text-accent: #1C2C80;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--surface-0);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--text-primary);
+    padding: 48px 20px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+  .intro { font-size: 14px; color: var(--text-secondary); margin: 0 0 24px; line-height: 1.6; }
+  button {
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-primary);
+    transition: border-color .15s ease, background .15s ease;
+  }
+  button:hover { border-color: var(--border-accent); background: var(--bg-accent); }
+  button:active { transform: scale(0.99); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AI governance readiness checklist</h1>
+  <p class="intro">Check off what you already have in place across each of the four pillars. No org has all sixteen on day one &mdash; this is meant to show where you're strong and where to focus next.</p>
+  <div id="pillars-root" style="display:flex; flex-direction:column; gap:16px; margin-bottom:1.5rem;"></div>
+  <div id="result-root"></div>
+</div>
+
+<script>
+(function(){
+  var pillars = [
+    {
+      name: "Foundational capabilities",
+      icon: "ti-folder",
+      discuss: "Where do you currently embed governance in early-stage decisions?",
+      items: [
+        "Defined AI governance structure",
+        "Ethical and policy oversight",
+        "Initial risk management framework",
+        "AI use case intake and review process"
+      ]
+    },
+    {
+      name: "Enabling infrastructure and process",
+      icon: "ti-settings",
+      discuss: "Which parts of the delivery pipeline need more governance support?",
+      items: [
+        "Data and model governance",
+        "Tooling to support oversight",
+        "Integrated execution framework for AI projects",
+        "Architecture and integration support"
+      ]
+    },
+    {
+      name: "Measurement and continuous oversight",
+      icon: "ti-chart-bar",
+      discuss: "What are you tracking today, and what's missing to show governance impact?",
+      items: [
+        "AI risk and value metrics",
+        "Process and outcome auditability",
+        "Stakeholder impact metrics",
+        "Governance KPIs, like model reuse or policy adherence"
+      ]
+    },
+    {
+      name: "Organizational enablement",
+      icon: "ti-user",
+      discuss: "What capabilities do your people need to sustain governance at scale?",
+      items: [
+        "Role clarity",
+        "AI governance training and awareness",
+        "Governance in vendor and open-source use",
+        "External engagement"
+      ]
+    }
+  ];
+
+  var checked = pillars.map(function(p){ return new Array(p.items.length).fill(false); });
+  var pillarsRoot = document.getElementById('pillars-root');
+  var resultRoot = document.getElementById('result-root');
+
+  function pillarScore(pIndex){
+    return checked[pIndex].filter(Boolean).length;
+  }
+
+  function renderPillars(){
+    var html = '';
+    pillars.forEach(function(pillar, pIndex){
+      var score = pillarScore(pIndex);
+      html += '<div style="background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:1.25rem;">';
+      html += '<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">';
+      html += '<div style="display:flex; align-items:center; gap:8px;">';
+      html += '<i class="ti ' + pillar.icon + '" style="font-size:18px; color:var(--text-secondary);" aria-hidden="true"></i>';
+      html += '<span style="font-size:15px; font-weight:500;">' + pillar.name + '</span>';
+      html += '</div>';
+      html += '<span style="font-size:13px; color:var(--text-secondary);">' + score + ' / ' + pillar.items.length + '</span>';
+      html += '</div>';
+      html += '<div style="display:flex; flex-direction:column; gap:6px;">';
+      pillar.items.forEach(function(item, iIndex){
+        var isChecked = checked[pIndex][iIndex];
+        html += '<button data-p="' + pIndex + '" data-i="' + iIndex + '" class="item-btn" style="display:flex; align-items:center; gap:8px; width:100%; text-align:left; padding:8px 10px;' + (isChecked ? ' border-color:var(--border-accent); background:var(--bg-accent);' : '') + '">';
+        html += '<i class="ti ' + (isChecked ? 'ti-circle-check' : 'ti-circle') + '" style="font-size:16px; flex-shrink:0; color:' + (isChecked ? 'var(--text-accent)' : 'var(--text-muted)') + ';" aria-hidden="true"></i>';
+        html += '<span style="font-size:13px;">' + item + '</span>';
+        html += '</button>';
+      });
+      html += '</div>';
+      html += '<p style="font-size:12px; color:var(--text-muted); font-style:italic; margin:0.75rem 0 0;">Discuss: ' + pillar.discuss + '</p>';
+      html += '</div>';
+    });
+    pillarsRoot.innerHTML = html;
+
+    pillarsRoot.querySelectorAll('.item-btn').forEach(function(btn){
+      var p = parseInt(btn.getAttribute('data-p'), 10);
+      var i = parseInt(btn.getAttribute('data-i'), 10);
+      btn.setAttribute('aria-pressed', checked[p][i] ? 'true' : 'false');
+      btn.addEventListener('click', function(){
+        checked[p][i] = !checked[p][i];
+        renderPillars();
+        renderResult();
+      });
+    });
+  }
+
+  function renderResult(){
+    var scores = pillars.map(function(p, idx){ return pillarScore(idx); });
+    var total = scores.reduce(function(a, b){ return a + b; }, 0);
+    var maxTotal = pillars.reduce(function(a, p){ return a + p.items.length; }, 0);
+
+    var weakestIndex = 0;
+    scores.forEach(function(s, idx){ if (s < scores[weakestIndex]) weakestIndex = idx; });
+
+    var html = '';
+    html += '<div style="background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:1.5rem;">';
+    html += '<div style="display:flex; align-items:baseline; gap:8px; margin-bottom:1rem;">';
+    html += '<span style="font-size:28px; font-weight:500;">' + total + '</span>';
+    html += '<span style="font-size:14px; color:var(--text-muted);">/ ' + maxTotal + ' overall</span>';
+    html += '</div>';
+
+    html += '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin-bottom:1.25rem;">';
+    pillars.forEach(function(pillar, idx){
+      var pct = Math.round((scores[idx] / pillar.items.length) * 100);
+      html += '<div style="background:var(--surface-1); border-radius:8px; padding:0.75rem;">';
+      html += '<p style="font-size:12px; color:var(--text-secondary); margin:0 0 6px; line-height:1.4;">' + pillar.name + '</p>';
+      html += '<p style="font-size:18px; font-weight:500; margin:0 0 6px;">' + scores[idx] + ' / ' + pillar.items.length + '</p>';
+      html += '<div style="height:4px; background:var(--border); border-radius:2px; overflow:hidden;">';
+      html += '<div style="height:100%; width:' + pct + '%; background:var(--border-accent);"></div>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+
+    html += '<div style="border-top:1px solid var(--border); padding-top:1.25rem;">';
+    html += '<p style="font-size:13px; color:var(--text-muted); margin:0 0 6px;">Focus area</p>';
+    html += '<p style="font-size:14px; color:var(--text-secondary); line-height:1.7; margin:0;"><strong style="font-weight:500; color:var(--text-primary);">' + pillars[weakestIndex].name + '</strong> (' + scores[weakestIndex] + ' / ' + pillars[weakestIndex].items.length + ') is your lightest pillar right now. ' + pillars[weakestIndex].discuss + '</p>';
+    html += '</div>';
+
+    html += '</div>';
+    resultRoot.innerHTML = html;
+  }
+
+  renderPillars();
+  renderResult();
+})();
+</script>
+</body>
+</html>
